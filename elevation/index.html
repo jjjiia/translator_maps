@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>altitude tests</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.48.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        body { margin:0; padding:0; }
+        #map { position:absolute; top:0; bottom:0; width:100%; z-index:-1; }
+        #stats{ padding:10px;position:absolute;bottom:0px;left:0px;height:100px;width:100%;background-color:rgba(255,255,255,.8);border-top:1px solid black;}
+    </style>
+</head>
+<body>
+<div id="stats">aaa</div>
+<div id='map'></div>
+<script>
+//example of what is represented at each level https://wiki.openstreetmap.org/wiki/Zoom_levels
+//load map at altitude
+
+//get menu of altitudes
+  var featureHeights = {
+    "Commericail Flights":35000,
+    "Rüppell's vulture":37100,
+    "Mallard":21000,
+    "Highest Kite":16009,
+    "Burj Khalifa":2717,
+    "One World Trade Center":1776,
+    "Limit of Drone flight":400    
+  }
+
+  function altittude(latitude,zoomlevel){
+ /*
+    The distance represented by one pixel (S) is given by
+
+        S = C * cos( latitude )/ 2 ^ zoomlevel
+
+    where 
+    latitude: is the latitude of where you're interested in the scale ( in radians ).
+    zoomlevel: is the zoom level ( typically a value between 0 & 21 )
+    and     
+    C is the (equatorial) circumference of the Earth
+    EARTH_RADIUS = 6378137 ( earth radius in meters )
+    //*/
+
+    var     EARTH_RADIUS = 3967*5280//6378137// ( earth radius in meters )
+    var C = Math.PI * 2 * EARTH_RADIUS;
+    //return EARTH_RADIUS + ( C * Math.cos( latitude ) / Math.pow( 2, zoomlevel ) );
+    return ( C * Math.cos( latitude ) / Math.pow( 2, zoomlevel ) );
+    
+  }
+  
+  function degreesToRadians(degrees){
+    return degrees*Math.PI/180
+  }
+  
+  mapboxgl.accessToken = 'pk.eyJ1IjoiampqaWlhMTIzIiwiYSI6ImNpbDQ0Z2s1OTN1N3R1eWtzNTVrd29lMDIifQ.gSWjNbBSpIFzDXU2X5YCiQ';
+  var map = new mapboxgl.Map({
+      style: 'mapbox://styles/jjjiia123/cjlsfh9rb09zd2rmgtaxwid9w',
+      center: [-73.976318,40.762835],
+      zoom: 16.2,
+      container: 'map'
+  });
+
+  map.on('load', function() {
+      var currentZoom = map.getZoom()
+      console.log(currentZoom)
+      var latRad = degreesToRadians(40.7135)
+      console.log(latRad)
+    
+      var alt = altittude(latRad,currentZoom)
+      console.log(alt)
+    
+  });
+
+map.on('move', function() {
+  var currentZoom = map.getZoom()
+  var latRad = degreesToRadians(40.7135)
+  var alt = altittude(latRad,currentZoom)
+  console.log(alt)
+})
+</script>
+
+</body>
+</html>
